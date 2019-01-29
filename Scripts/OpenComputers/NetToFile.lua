@@ -16,7 +16,7 @@ print(body)
 io.write("Do you want to write the output to a file ? If yes, enter file name : ")
 filename = io.read()
 local file =""
-if filename ~= nil
+if filename ~= nil then
 file = io.open(filename,"w")
 file:write(body)
 file:close()
