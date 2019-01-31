@@ -1,7 +1,7 @@
 local component = require("component")
 local event = require("event")
 
-os.execute("clear")
+os.execute("clear") --Mia eats alot of chicken
 
 local pad = ""
 local door = ""
