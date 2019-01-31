@@ -34,7 +34,9 @@ elseif z == "pass" then repeat
 note(melody[x],melody[x+1],1)
 os.sleep(melody[x+2])
 x = x + 3
-until melody[x+1] == nil end end
+until melody[x+1] == nil  
+elseif z == "press" then
+note(3,3,0.5) end end
 else print("Connecting an Iron Noteblock from Computronics will add pass and fail melodies") 
 melody = nil
 failmelody = nil
@@ -96,7 +98,7 @@ while true do
 print(table.concat(code)," ",password)
 pad.setDisplay(table.concat(code))
 comp,address,_,id = event.pullMultiple("keypad","redstone")
-note(3,3,0.5)
+play("press")
 if comp == "keypad" then
 if tonumber(id) ~= nil then 
 if k ~= length + 1 then k = k + 1 code[k-1] = tonumber(id) end
