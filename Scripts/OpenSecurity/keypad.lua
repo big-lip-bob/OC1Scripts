@@ -9,7 +9,7 @@ local door = ""
 if component.isAvailable("os_keypad") and component.isAvailable("os_doorcontroller") then
 pad = component.os_keypad
 door = component.os_doorcontroller
-else print("You need to connect a keypad and door controller from OpenSecurity to be able to use that script")goto END
+else print("You need to connect a keypad and door controller from OpenSecurity to be able to use that script") goto END
 end
 
 local noteblock
