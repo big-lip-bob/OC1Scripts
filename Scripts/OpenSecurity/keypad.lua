@@ -1,19 +1,46 @@
 local component = require("component")
 local event = require("event")
 
--- This script requires OC, Computronics and OpenSecurity to work
-
-local noteblock = component.iron_noteblock
-local pad = component.os_keypad
-local door = component.os_doorcontroller
-
-os.execute("resolution 40 50")
 os.execute("clear")
 
-function note(i,n,v) noteblock.playNote(i,n,v) end
+local pad = ""
+local door = ""
 
-local failmelody = {2,8,0.2,2,8,0.2,2,8,}
-local melody = {0,18,0.10,0,18,0.20,0,20,0.20,0,23}
+if component.isAvailable("os_keypad") and component.isAvailable("os_doorcontroller") then
+pad = component.os_keypad
+door = component.os_doorcontroller
+else print("You need to connect a keypad and door controller from OpenSecurity to be able to use that script")goto END
+end
+
+local noteblock
+local melody = {}
+local failmelody = {}
+local x = 1
+
+function play() end
+
+if component.isAvailable("iron_noteblock") then
+failmelody = {2,8,0.2,2,8,0.2,2,8,}
+melody = {0,18,0.10,0,18,0.20,0,20,0.20,0,23}
+noteblock = component.iron_noteblock
+function note(i,n,v) noteblock.playNote(i,n,v) end
+function play(z)
+if z == "fail" then repeat
+note(failmelody[x],failmelody[x+1],1)
+os.sleep(failmelody[x+2])
+x = x + 3
+until failmelody[x+1] == nil
+elseif z == "pass" then repeat
+note(melody[x],melody[x+1],1)
+os.sleep(melody[x+2])
+x = x + 3
+until melody[x+1] == nil end end
+else print("Connecting an Iron Noteblock from Computronics will add pass and fail melodies") 
+melody = nil
+failmelody = nil
+end
+
+os.execute("resolution 40 50")
 
 local input = ""
 repeat
@@ -36,7 +63,6 @@ pad.setEventName("keypad")
 pad.setShouldBeep(false)
 
 function reset()
-k = 1
 for i = 1,length do
 code[i] = "-" end
 end
@@ -47,13 +73,9 @@ pad.setDisplay("Invalid")
 reset()
 print("Invalid Password")
 else print("Unauthorized Redstone Access") end
-local x = 1
+x = 1
 door.close()
-repeat
-note(failmelody[x],failmelody[x+1],1)
-os.sleep(failmelody[x+2])
-x = x + 3
-until failmelody[x+1] == nil
+play("fail")
 os.sleep(3)
 end
 
@@ -64,12 +86,8 @@ pad.setDisplay("Valid")
 reset()
 print("Valid Password")
 else print("Authozied Redstone Access") end
-local x = 1
-repeat
-note(melody[x],melody[x+1],1)
-os.sleep(melody[x+2])
-x = x + 3
-until melody[x+1] == nil
+x = 1
+play("pass")
 os.sleep(3)
 door.close()
 end
@@ -87,12 +105,14 @@ if k ~= 1 then
 k = k - 1 code[k] = "-" 
 end
 elseif tonumber(table.concat(code)) == password then 
-pass()
+pass() k = 1
 else 
-fail()
+fail() k = 1
 end 
 elseif address == red
-then pass(1)
-else fail(1)
+then pass(1) k = 1
+else fail(1) k = 1
 end
 end
+
+::END::
