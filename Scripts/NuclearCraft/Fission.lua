@@ -7,19 +7,16 @@ if not component.isAvailable("nc_fission_reactor") then
   os.exit()
 end
 
-local run = true
-
 function exit(msg)
 term.clear()
 print(msg)
-run = false
 os.exit()
 end
 
 t = thread.create(function()
   os.sleep(3)
   event.pull("key_")
-  exit("Exiting due to keyboard press")
+  exit("Exiting due to a keyboard press")
 end)
 
 os.execute("resolution 48 24")
@@ -30,7 +27,7 @@ local SEP = 0
 local MHP = 50
 local WSEP = 75
 
-while run do
+while t:status() == "running" do
 
   	local SEP = reactor.getEnergyStored() / reactor.getMaxEnergyStored() * 100
 	local HP = reactor.getHeatLevel() / reactor.getMaxHeatLevel() * 100
@@ -47,7 +44,7 @@ while run do
 		local A
 		if reactor.isProcessing == false
 		then A = "Active"
-		else  A = "Standby"
+		else A = "Standby"
 		end
 		
 		local L = {
