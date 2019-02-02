@@ -1,12 +1,12 @@
 local component = require("component")
 local term = require("term")
 
-os.execute("resolution 48 24")
-
 if not component.isAvailable("nc_fission_reactor") then
   print("Reactor not connected. Please connect the computer to the fission reactor.")
   os.exit()
 end
+
+os.execute("resolution 48 24")
 
 local reactor = component.nc_fission_reactor
 local HP = 0
