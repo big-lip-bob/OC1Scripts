@@ -1,7 +1,7 @@
 local component = require("component")
 local event = require("event")
 
-os.execute("clear") --Mia eats alot of chicken
+os.execute("clear")
 
 local pad = ""
 local door = ""
@@ -36,7 +36,8 @@ os.sleep(melody[x+2])
 x = x + 3
 until melody[x+1] == nil  
 elseif z == "press" then
-note(3,3,0.5) end end
+note(3,3,0.5) end
+end
 else print("Connecting an Iron Noteblock from Computronics will add pass and fail melodies") 
 melody = nil
 failmelody = nil
