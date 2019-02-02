@@ -1,10 +1,26 @@
 local component = require("component")
 local term = require("term")
+local thread = require("thread")
 
 if not component.isAvailable("nc_fission_reactor") then
   print("Reactor not connected. Please connect the computer to the fission reactor.")
   os.exit()
 end
+
+local run = true
+
+function exit(msg)
+term.clear()
+print(msg)
+run = false
+os.exit()
+end
+
+t = thread.create(function()
+  os.sleep(3)
+  event.pull("key_")
+  exit("Exiting due to keyboard press")
+end)
 
 os.execute("resolution 48 24")
 
@@ -14,20 +30,7 @@ local SEP = 0
 local MHP = 50
 local WSEP = 75
 
-function exit_msg(msg)
-  if component.isAvailable("nc_fission_reactor")
-  then reactor.deactivate()
-  end
-  term.clear()
-  print(msg)
-  os.exit()
-end
-
-  if not component.isAvailable("nc_fission_reactor")
-    then exit_msg("Reactor disconnected, exiting")
-  end
-
-while true do
+while run do
 
   	local SEP = reactor.getEnergyStored() / reactor.getMaxEnergyStored() * 100
 	local HP = reactor.getHeatLevel() / reactor.getMaxHeatLevel() * 100
@@ -75,3 +78,5 @@ while true do
   os.sleep(0.05)
   
 end
+
+reactor.deactivate()
