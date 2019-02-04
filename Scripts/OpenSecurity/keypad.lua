@@ -3,8 +3,7 @@ local event = require("event")
 
 os.execute("clear")
 
-local pad = ""
-local door = ""
+local pad,door,input,noteblock,pass,fail
 
 if component.isAvailable("os_keypad") and component.isAvailable("os_doorcontroller") then
 pad = component.os_keypad
@@ -12,11 +11,7 @@ door = component.os_doorcontroller
 else print("You need to connect a keypad and door controller from OpenSecurity to be able to use that script") goto END
 end
 
-local noteblock
-local melody = {}
-local failmelody = {}
 local x = 1
-
 function play() end
 
 if component.isAvailable("iron_noteblock") then
@@ -25,27 +20,18 @@ melody = {0,18,0.10,0,18,0.20,0,20,0.20,0,23}
 noteblock = component.iron_noteblock
 function note(i,n,v) noteblock.playNote(i,n,v) end
 function play(z)
-if z == "fail" then repeat
-note(failmelody[x],failmelody[x+1],1)
-os.sleep(failmelody[x+2])
+if z ~= then repeat
+note(z[x],z[x+1],1)
+os.sleep(z[x+2])
 x = x + 3
-until failmelody[x+1] == nil
-elseif z == "pass" then repeat
-note(melody[x],melody[x+1],1)
-os.sleep(melody[x+2])
-x = x + 3
-until melody[x+1] == nil  
-elseif z == "press" then
-note(3,3,0.5) end
+until z[x+1] == nil
+else note(3,3,0.5) end
 end
 else print("Connecting an Iron Noteblock from Computronics will add pass and fail melodies") 
-melody = nil
-failmelody = nil
 end
 
 os.execute("resolution 40 50")
 
-local input = ""
 repeat
 io.write("Set the PIN code, from 3 to 8 numbers : ")
 input = io.read()
@@ -75,7 +61,7 @@ print("Invalid Password")
 else print("Unauthorized Redstone Access") end
 x = 1
 door.close()
-play("fail")
+play(fail)
 os.sleep(3)
 end
 
@@ -87,7 +73,7 @@ reset()
 print("Valid Password")
 else print("Authozied Redstone Access") end
 x = 1
-play("pass")
+play(pass)
 os.sleep(3)
 door.close()
 end
