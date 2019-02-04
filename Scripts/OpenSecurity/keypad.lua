@@ -13,19 +13,19 @@ end
 
 local x = 1
 function play() end
+function note() end
 
 if component.isAvailable("iron_noteblock") then
 failmelody = {2,8,0.2,2,8,0.2,2,8,}
-melody = {0,18,0.10,0,18,0.20,0,20,0.20,0,23}
+passmelody = {0,18,0.10,0,18,0.20,0,20,0.20,0,23}
 noteblock = component.iron_noteblock
 function note(i,n,v) noteblock.playNote(i,n,v) end
 function play(z)
-if z ~= then repeat
+repeat
 note(z[x],z[x+1],1)
 os.sleep(z[x+2])
 x = x + 3
 until z[x+1] == nil
-else note(3,3,0.5) end
 end
 else print("Connecting an Iron Noteblock from Computronics will add pass and fail melodies") 
 end
@@ -61,7 +61,7 @@ print("Invalid Password")
 else print("Unauthorized Redstone Access") end
 x = 1
 door.close()
-play(fail)
+play(failmelody)
 os.sleep(3)
 end
 
@@ -73,7 +73,7 @@ reset()
 print("Valid Password")
 else print("Authozied Redstone Access") end
 x = 1
-play(pass)
+play(passmelody)
 os.sleep(3)
 door.close()
 end
@@ -82,7 +82,7 @@ while true do
 print(table.concat(code)," ",password)
 pad.setDisplay(table.concat(code))
 comp,address,_,id = event.pullMultiple("keypad","redstone")
-play("press")
+note(3,3,0.5)
 if comp == "keypad" then
 if tonumber(id) ~= nil then 
 if k ~= length + 1 then k = k + 1 code[k-1] = tonumber(id) end
