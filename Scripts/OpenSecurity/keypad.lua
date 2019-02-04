@@ -57,18 +57,15 @@ red = io.read()
 local length = string.len(tostring(tonumber(input)))
 local password = tonumber(input)
 
-local code = {}
-for i = 1,length do
-code[i] = "-" end
-local k = 1
-
 pad.setEventName("keypad")
 pad.setShouldBeep(false)
 
+local code = {}
 function reset()
 for i = 1,length do
 code[i] = "-" end
 end
+reset()
 
 function fail(i)
 if i == nil then
