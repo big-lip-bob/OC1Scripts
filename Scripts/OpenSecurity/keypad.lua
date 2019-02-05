@@ -11,6 +11,8 @@ door = component.os_doorcontroller
 else print("You need to connect a keypad and door controller from OpenSecurity to be able to use that script") goto END
 end
 
+pad.setEventName("keypad")
+
 local x = 1
 function play() end
 function note() end
@@ -19,6 +21,7 @@ if component.isAvailable("iron_noteblock") then
 failmelody = {2,8,0.2,2,8,0.2,2,8,}
 passmelody = {0,18,0.10,0,18,0.20,0,20,0.20,0,23}
 noteblock = component.iron_noteblock
+pad.setShouldBeep(false)
 function note(i,n,v) noteblock.playNote(i,n,v) end
 function play(z)
 repeat
@@ -27,7 +30,8 @@ os.sleep(z[x+2])
 x = x + 3
 until z[x+1] == nil
 end
-else print("Connecting an Iron Noteblock from Computronics will add pass and fail melodies") 
+else print("Connecting an Iron Noteblock from Computronics will add pass and fail melodies")
+pad.setShouldBeep(true)
 end
 
 os.execute("resolution 40 50")
@@ -42,9 +46,6 @@ red = io.read()
 
 local length = string.len(tostring(tonumber(input)))
 local password = tonumber(input)
-
-pad.setEventName("keypad")
-pad.setShouldBeep(false)
 
 local code = {}
 function reset()
