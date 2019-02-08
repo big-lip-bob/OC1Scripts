@@ -12,7 +12,7 @@ end
 
 pad.setEventName("keypad")
 
-local input,noteblock,pass,fail
+local input,noteblock,pass,fail,passmelody,failmelody
 
 local x = 1
 function play() end
