@@ -15,8 +15,8 @@ pad.setEventName("keypad")
 local input,noteblock,pass,fail,passmelody,failmelody
 
 local x = 1
-function play() end
-function note() end
+local function play() end
+local function note() end
 
 if component.isAvailable("iron_noteblock") then
 failmelody = {2,8,0.2,2,8,0.2,2,8,}
