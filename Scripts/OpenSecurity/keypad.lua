@@ -2,6 +2,7 @@ local component = require("component")
 local event = require("event")
 
 os.execute("clear")
+local pad,door
 
 if component.isAvailable("os_keypad") and component.isAvailable("os_doorcontroller") then
 pad = component.os_keypad
@@ -11,7 +12,7 @@ end
 
 pad.setEventName("keypad")
 
-local pad,door,input,noteblock,pass,fail
+local input,noteblock,pass,fail
 
 local x = 1
 function play() end
