@@ -10,14 +10,13 @@ end
 function exit(msg)
 term.clear()
 print(msg)
+os.exit()
 end
 
 t = thread.create(function()
   os.sleep(3)
-  event.pull("key_")	
-  term.clear()
-  print("Exiting due to a keyboard press")
-  goto EXIT
+  event.pull("key_")
+  exit("Exiting due to keyboard press")
 end)
 
 os.execute("resolution 48 24")
@@ -28,7 +27,7 @@ local SEP = 0
 local MHP = 50
 local WSEP = 75
 
-while true do
+while t:status() ~= "dead" do
 
   	local SEP = reactor.getEnergyStored() / reactor.getMaxEnergyStored() * 100
 	local HP = reactor.getHeatLevel() / reactor.getMaxHeatLevel() * 100
@@ -70,9 +69,11 @@ while true do
       term.setCursor(LM , ( i * S ))
       term.write(v)
     end
+
   end
-  os.sleep(0.05)
+  
+  os.sleep(0.25)
+  
 end
 
-:EXIT:
 reactor.deactivate()
