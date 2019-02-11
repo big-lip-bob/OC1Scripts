@@ -1,106 +1,79 @@
 local component = require("component")
-local event = require("event")
+local term = require("term")
+local thread = require("thread")
 
-os.execute("clear")
-local pad,door
-
-if component.isAvailable("os_keypad") and component.isAvailable("os_doorcontroller") then
-pad = component.os_keypad
-door = component.os_doorcontroller
-else print("You need to connect a keypad and door controller from OpenSecurity to be able to use that script") goto END
+if not component.isAvailable("nc_fission_reactor") then
+  print("Reactor not connected. Please connect the computer to the fission reactor.")
+  os.exit()
 end
 
-pad.setEventName("keypad")
-
-local input,noteblock,pass,fail,passmelody,failmelody
-
-local x = 1
-function play() end
-function note() end
-
-if component.isAvailable("iron_noteblock") then
-failmelody = {2,8,0.2,2,8,0.2,2,8,}
-passmelody = {0,18,0.10,0,18,0.20,0,20,0.20,0,23}
-noteblock = component.iron_noteblock
-pad.setShouldBeep(false)
-function note(i,n,v) noteblock.playNote(i,n,v) end
-function play(z)
-repeat
-note(z[x],z[x+1],1)
-os.sleep(z[x+2])
-x = x + 3
-until z[x+1] == nil
-end
-else print("Connecting an Iron Noteblock from Computronics will add pass and fail melodies")
-pad.setShouldBeep(true)
+function exit(msg)
+term.clear()
+print(msg)
+os.exit()
 end
 
-os.execute("resolution 40 50")
+t = thread.create(function()
+  os.sleep(3)
+  event.pull("key_")
+  exit("Exiting due to keyboard press")
+end)
 
-repeat
-io.write("Set the PIN code, from 3 to 8 numbers : ")
-input = io.read()
-until tonumber(input) ~= nil and string.len(tostring(tonumber(input))) <= 8 and string.len(tostring(tonumber(input))) >= 3 
+os.execute("resolution 48 24")
 
-io.write("Set the Redstone IO component address : ")
-red = io.read()
+local reactor = component.nc_fission_reactor
+local HP = 0
+local SEP = 0
+local MHP = 50
+local WSEP = 75
 
-local length = string.len(tostring(tonumber(input)))
-local password = tonumber(input)
+while t:status() ~= "dead" do
 
-local code = {}
-function reset()
-for i = 1,length do
-code[i] = "-" end
-end
-reset()
+  	local SEP = reactor.getEnergyStored() / reactor.getMaxEnergyStored() * 100
+	local HP = reactor.getHeatLevel() / reactor.getMaxHeatLevel() * 100
+	
+    if HP > MHP or SEP > WSEP
+		then reactor.deactivate()
+		else reactor.activate()
+    end
+	
+  if term.isAvailable() then
+		local E = (math.floor(reactor.getEfficiency() * 10)) / 10
+		local H = (math.floor(reactor.getHeatMultiplier() * 10)) / 10
+		
+		local A
+		if reactor.isProcessing == false
+		then A = "Active"
+		else A = "Standby"
+		end
+		
+		local L = {
+		"" ,
+		"" .. math.floor(reactor.getLengthX()) .. "x" .. math.floor(reactor.getLengthY()) .. "x" .. math.floor(reactor.getLengthZ()) .. " " .. A .. " Fission Reactor" ,
+		"Fuel :       " .. reactor.getFissionFuelName() ,
+		"             " .. reactor.getFissionFuelPower() .. " RF/t - " .. reactor.getFissionFuelHeat() .. " H/t",
+		"Efficiency : " .. E .. "%" ,
+		"Heat :       " .. H .. "%" ,
+		"Energy :     " .. math.floor(reactor.getEnergyStored()) .. " / " .. math.floor(reactor.getMaxEnergyStored()) ,
+		"Energy I/O : " .. math.floor(-1 * (reactor.getEnergyChange())) ,
+		"Heat :       " .. math.floor(reactor.getHeatLevel()) .. " / " .. math.floor(reactor.getMaxHeatLevel()) ,
+		"Heat Gen :   " .. math.floor(reactor.getReactorProcessHeat())
+		}
+		
+		term.clear()
+		
+		local LM = 3
+		local S = 1
+		
+	for i, v in ipairs(L) do
+      term.setCursor(LM , ( i * S ))
+      term.write(v)
+    end
 
-function fail(i)
-if i == nil then
-pad.setDisplay("Invalid")
-reset()
-print("Invalid Password")
-else print("Unauthorized Redstone Access") end
-x = 1
-door.close()
-play(failmelody)
-os.sleep(3)
-end
-
-function pass(i)
-door.open()
-if i == nil then
-pad.setDisplay("Valid")
-reset()
-print("Valid Password")
-else print("Authozied Redstone Access") end
-x = 1
-play(passmelody)
-os.sleep(3)
-door.close()
-end
-
-while true do
-print(table.concat(code)," ",password)
-pad.setDisplay(table.concat(code))
-comp,address,_,id = event.pullMultiple("keypad","redstone")
-note(3,3,0.5)
-if comp == "keypad" then
-if tonumber(id) ~= nil then 
-if k ~= length + 1 then k = k + 1 code[k-1] = tonumber(id) end
-elseif id == "*" then 
-if k ~= 1 then 
-k = k - 1 code[k] = "-" 
-end
-elseif tonumber(table.concat(code)) == password then 
-pass() k = 1
-else 
-fail() k = 1
-end 
-elseif address == red
-then pass(1) k = 1
-else fail(1) k = 1
-end
+  end
+  
+  os.sleep(0.25)
+  
 end
 
-::END::
+reactor.deactivate()
