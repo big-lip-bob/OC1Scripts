@@ -40,9 +40,10 @@ while t:status() ~= "dead" do
   if term.isAvailable() then
 		local E = (math.floor(reactor.getEfficiency() * 10)) / 10
 		local H = (math.floor(reactor.getHeatMultiplier() * 10)) / 10
+		local C = math.floor(math.abs(reactor.getEnergyChange()))
 		
 		local A
-		if reactor.isProcessing == false
+		if C > 0
 		then A = "Active"
 		else A = "Standby"
 		end
@@ -55,7 +56,7 @@ while t:status() ~= "dead" do
 		"Efficiency : " .. E .. "%" ,
 		"Heat :       " .. H .. "%" ,
 		"Energy :     " .. math.floor(reactor.getEnergyStored()) .. " / " .. math.floor(reactor.getMaxEnergyStored()) ,
-		"Energy I/O : " .. math.floor(-1 * (reactor.getEnergyChange())) ,
+		"Energy I/O : " .. C ,
 		"Heat :       " .. math.floor(reactor.getHeatLevel()) .. " / " .. math.floor(reactor.getMaxHeatLevel()) ,
 		"Heat Gen :   " .. math.floor(reactor.getReactorProcessHeat())
 		}
