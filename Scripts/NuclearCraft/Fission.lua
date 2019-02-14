@@ -11,7 +11,7 @@ local x , y = component.gpu.maxResolution()
 local x = math.min(y,24) * 2
 component.gpu.setResolution(x,x/2)
 
-local reactor,MPH,WSEP,runv,help,auto,E,H,C,G = component.nc_fission_reactor,50,75,true,true,false
+local reactor,MHP,WSEP,runv,help,auto,E,H,C,G = component.nc_fission_reactor,50,75,true,true,false
 
 function run(b)
  if b and runv then return true
@@ -19,11 +19,11 @@ function run(b)
  end
 end
 
+function insert(table, key, content) table[key] = content end
 function runf() run(false) end
 function updatef() reactor.forceUpdate() end
 function autof() if auto == true then auto = false else auto = true end end
 function helpf() if help == true then help = false else help = true end end
-
 local keyactions = {[35]=helpf,[30]=autof,[22]=updatef,[18]=runf}
 
 local preG = math.floor(reactor.getReactorProcessHeat())
@@ -31,6 +31,16 @@ if preG > 0
   then G = preG
  else G = "None"
 end
+
+local Help = {
+"",
+"Press U to call an update to all the values",
+"Press A to toggle Auto control : " .. tostring(auto),
+"Press E to exit the script",
+"Press H to toggle this help message",
+"The script is really slow so",
+"exept some delay on key presses"
+}
 
 while run(true) do
  
@@ -70,14 +80,6 @@ local L = {
 "Heat Gen :   " .. G,
 }
 
-local Help = {
-"",
-"Press U to call an update to all the values",
-"Press A to toggle Auto control : " .. tostring(auto),
-"Press E to exit the script",
-"Press H to toggle this help message"
-}
-		
   term.clear()
 		
   for i, v in ipairs(L) do
@@ -86,14 +88,15 @@ local Help = {
   end
    
   if help == true then
+  insert(Help,3,"Press A to toggle Auto control : " .. tostring(auto))
    for i,v in ipairs(Help) do
     term.setCursor(3,10+i)
     term.write(v)
    end
   end
-  
-  local event, addres , v1 , v2 = event.pull(0.3)
-  if event == "key_down" then
+
+  local ev, _ , _ , v2 = event.pull(0.3)
+  if ev == "key_up" then
    if keyactions[v2] ~= nil then keyactions[v2]() end
   end
  end
