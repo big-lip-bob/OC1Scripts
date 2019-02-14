@@ -41,7 +41,7 @@ while run do
 	
   if term.isAvailable() then
 	local A = ""
-	if C > 0
+	if reactor.isProcesing()
 	then A = "Active"
 	else A = "Standby"
 	end
