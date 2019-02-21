@@ -1,38 +1,36 @@
-
--- Bob's Secret stuff 打打打打打打打打打打
-
 local component = require("component")
+local unicode = require("unicode")
 local gpu = component.gpu
 
-local gcls = {[0]=" ","▂","▃","▄","▅","▆","▇","█"}
-local ghl, pghl, gfl, pgfl = {}, {}, {}, {}
+local gcls = {[0]=" ","▂","▃","▄","▅","▆","▇"}
 
 -- over complicated vertical line graph bar display 
 
 local bobs = {}
 
-function bobs.DGLV(input,maxx,x,y,w,h,k,t)
+function bobs.DGLV(input,maxx,x,y,w,h,pghl,pgfl,fore,back)
 
- if t == nil then
-  t = glcs
+ local w,h = tonumber(w)-1,tonumber(h)-1
+ if fore and back then
+ gpu.setBackground(back)
+ gpu.setForeground(fore)
  end
 
- local cc = #t
- local hper = input,maxx
+ local hper = input/maxx
  local preg = h * hper
  local gfl = math.floor(preg)
  local ghl = preg - gfl
- local sctd = math.floor(ghl * cc)
- 
-  if ghl ~= pghl then
- gpu.set(a,h-hgfl+1,t[sctd])
+ local sctd = math.floor(ghl * 6)
+
+ if sctd ~= pghl then
+ gpu.set(x,h-gfl+1,gcls[sctd])
   if gfl ~= pgfl then
-   gpu.fill(x,h-gfl+2,w,gfl,t[cc])
+   gpu.fill(x,h-gfl+2,w,gfl,gcls[6])
    gpu.fill(x,y,w,h-gfl-1," ")
   end
  end
  
- pghl[k], pgfl[k] = ghl[k], gfl[k]
+ return sctd,gfl
 
 end
 
@@ -82,7 +80,7 @@ function bobs.text(x,y,tabletext,fore,back)
  end
  if back ~= nil then
   gpu.setBackground(back)
- end
+ end	
  
  for i,t in ipairs(tabletext) do
   gpu.set(x,y+i,t)
@@ -90,37 +88,56 @@ function bobs.text(x,y,tabletext,fore,back)
  
 end
 
--- ▄ ▀ █ ⣴ ⣠ ⠟ ⠋
+-- ▄ ▀ █ ⣴ ⣠ ⠚ ⠟ ⠋ 打打打打打打打打打打
 
-function bobs.button(x,y,w,h,txt,clr,txtclr,anti,flat)
+function bobs.TB(x,y,w,h,txt,clr,txtclr,anti,flat)
 
- local w,h = w-1,h-1
- if anti ~= nil then
-  local mclr,pclr=clr-0x111111,clr+0x111111 else
-  local mclr,pclr=clr+0x111111,clr-0x111111
+ local w,h = w-1,h-1 
+ if anti  then
+  mclr,pclr=clr+0x111111,clr-0x111111 else
+  mclr,pclr=clr-0x111111,clr+0x111111
  end
  
- if flat == nil or w > 3 and h > 3 then
-  gpu.setBackground(clr-0x111111)
-  gpu.setForeground(clr+0x111111)
-  gpu.setBackground(clr+0x111111)
-  gpu.setForeground(clr-0x111111)
+ if not flat and w+1 >= 3 and h+1 >= 3 then
+  gpu.setBackground(pclr)
+  gpu.setForeground(mclr)
   gpu.fill(x,y,w,h," ")
   gpu.fill(x+1,y+1,w,h,"█")
   gpu.set(x,y+h,"⣠")
   gpu.set(x+w,y,"⣴")
   gpu.setBackground(clr)
   gpu.fill(x+1,y+h,w-1,1,"▄")
-  gpu.setForeground(clr+0x111111)
+  gpu.setForeground(pclr)
   gpu.fill(x+1,y,w-1,1,"▀")
   gpu.setBackground(clr)
   gpu.fill(x+1,y+1,w-1,h-1," ")
   else
   gpu.setBackground(clr)
-  gpu.fill(x,y,w,h," ")
+  gpu.fill(x,y,w+1,h+1," ")
  end
+ gpu.setBackground(clr)
  gpu.setForeground(txtclr)
  gpu.set(math.floor(x+w/2-string.len(txt)/2+0.5	),math.floor(y+h/2+0.5),txt) 
 end
+
+-- 1 2
+-- 3 4 Please input a binary string
+-- 5 6 打打打打打打打打打打
+-- 7 8
+
+function bobs.braille(input)
+ local base = 0x2800
+ local a,b = {},{1,8,2,16,4,32,64,128}
+ for c in string.gmatch(tostring(input),".") do a[#a+1] = c end
+ for i = 1,#a do if a[i] == "1" then base = base + b[i] end end
+ return unicode.char(base)
+end
+
+function bobs.RCB(x,y,w,h,f,b)
+ gpu.setForeground(f)
+ gpu.setBackground(b)
+ gpu.fill(x,y,w-1,h-1," ")
+end
+
 
 return bobs
