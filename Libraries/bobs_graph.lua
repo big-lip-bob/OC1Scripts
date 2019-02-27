@@ -1,8 +1,10 @@
+
+-- Bob's Secret stuff 打打打打打打打打打打
+
 local component = require("component")
 local unicode = require("unicode")
 local gpu = component.gpu
-
-local gcls = {[0]=" ","▂","▃","▄","▅","▆","▇"}
+local gcls = {"▁","▂","▃","▄","▅","▆","▇","█",[0] = ""}
 
 -- over complicated vertical line graph bar display 
 
@@ -10,7 +12,6 @@ local bobs = {}
 
 function bobs.DGLV(input,maxx,x,y,w,h,pghl,pgfl,fore,back)
 
- local w,h = tonumber(w)-1,tonumber(h)-1
  if fore and back then
  gpu.setBackground(back)
  gpu.setForeground(fore)
@@ -23,11 +24,11 @@ function bobs.DGLV(input,maxx,x,y,w,h,pghl,pgfl,fore,back)
  local sctd = math.floor(ghl * 6)
 
  if sctd ~= pghl then
- gpu.set(x,h-gfl+1,gcls[sctd])
   if gfl ~= pgfl then
-   gpu.fill(x,h-gfl+2,w,gfl,gcls[6])
-   gpu.fill(x,y,w,h-gfl-1," ")
+   gpu.fill(x,y+h-gfl,w,gfl,gcls[8])
+   gpu.fill(x,y,w,h-gfl," ") 
   end
+  gpu.fill(x,y+h-gfl-1,w,1,gcls[sctd])
  end
  
  return sctd,gfl
@@ -120,7 +121,7 @@ function bobs.TB(x,y,w,h,txt,clr,txtclr,anti,flat)
  gpu.set(math.floor(x+w/2-string.len(txt)/2+0.5	),math.floor(y+h/2+0.5),txt) 
 end
 
--- 1 2
+-- 1 2 like 10100110 will give ⡣
 -- 3 4 Please input a binary string
 -- 5 6 打打打打打打打打打打
 -- 7 8
