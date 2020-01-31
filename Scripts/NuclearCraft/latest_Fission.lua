@@ -135,6 +135,7 @@ local function deactivate()
  buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
 end
 
+local function autoButtonHolder () os.sleep(0.25) end
 local function autoButton()
  if autoV then
   autoV = false
@@ -148,7 +149,7 @@ local function autoButton()
   graph.TB(nil,7,12,12,3,"Auto",0x11bb11,0xffffff,true)
   os.sleep(0.2)
   graph.TB(nil,7,12,12,3,"Auto",0x11bb11,0xffffff)
-  buttons[2] = graph.TB((function() os.sleep(0.25) end),22,12,12,3,"Disabled",0x999999,0xeeeeee)
+  buttons[2] = graph.TB(autoButtonHolder,22,12,12,3,"Disabled",0x999999,0xeeeeee)
  end
 end
 
@@ -168,11 +169,12 @@ local function updateAll()
  
 end
 
+local function buttonsDrawHolder() workV = false end
 local function buttonsDraw()
  buttons[1] = graph.TB(autoButton,7,12,12,3,"Auto",0xbb1111,0xffffff)
  buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
  buttons[3] = graph.TB(updateAll,22,16,12,3,"Update",0xbb1111,0xffffff)
- buttons[4] = graph.TB((function() workV = false end),7,16,12,3,"Exit",0x999999,0xeeeeee)
+ buttons[4] = graph.TB(buttonsDrawHolder,7,16,12,3,"Exit",0x999999,0xeeeeee)
 end
 
 reinitialize()
@@ -214,4 +216,3 @@ gpu.setBackground(0)
 gpu.setForeground(0xffffff)
 os.execute("clear")
 print("Exiting")
-
