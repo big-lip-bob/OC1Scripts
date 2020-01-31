@@ -4,9 +4,10 @@ local graph = require("bobs_graph")
 
 if not component.isAvailable("nc_fission_reactor") then
   print("Reactor not connected. Please connect the computer to the fission reactor.")
-  os.exit()
+  return
 end
 
+local floor,sleep = math.floor,os.sleep
 local r = component.nc_fission_reactor
 local mr, mh 
 
@@ -17,6 +18,16 @@ if gpu.maxResolution() > 40
 end
 
 local heat,workV,autoV = false,true,false
+
+local function summonHeat()
+
+ if r.getReactorProcessHeat() > 0 then
+  graph.DC(36,2,3,18,{0xffffff,0x777777,0xffcc00,0x555555}," ")
+  heat = true
+ end
+
+end
+
 local function reinitialize()
  
  r.deactivate()
@@ -47,21 +58,12 @@ local function reinitialize()
 
 end
 
-local function summonHeat()
-
- if r.getReactorProcessHeat() > 0 then
-  graph.DC(36,2,3,18,{0xffffff,0x777777,0xffcc00,0x555555}," ")
-  heat = true
- end
-
-end
-
 local function updateFuels()
 
  gpu.setForeground(0xeeaa00)
  gpu.setBackground(0x777777)
  gpu.set(14,3,r.getFissionFuelName())
- gpu.set(7,4,math.floor(r.getFissionFuelPower()) .. " RF/t - " .. math.floor(r.getFissionFuelHeat()) .. " H/t")
+ gpu.set(7,4,floor(r.getFissionFuelPower()) .. " RF/t - " .. floor(r.getFissionFuelHeat()) .. " H/t")
  
 end
 
@@ -87,8 +89,8 @@ end
 
 local function updateM()
 
- local E = math.floor(r.getEfficiency() * 10) / 10
- local H = math.floor(r.getHeatMultiplier() * 10) / 10
+ local E = floor(r.getEfficiency() * 10) / 10
+ local H = floor(r.getHeatMultiplier() * 10) / 10
  local HG,M = graph.EVC(r.getReactorProcessHeat())
 
  local M = {
@@ -114,7 +116,7 @@ local function updateMain()
  }
 
  gpu.setBackground(0x777777)
- gpu.set(20,10,tostring(math.floor(math.abs(r.getEnergyChange()))))
+ gpu.set(20,10,tostring(floor(math.abs(r.getEnergyChange()))))
  graph.text(15,8,F,0xeeaa00)
 
 end
@@ -123,7 +125,7 @@ local buttons = {}
 
 local function activate()
  graph.TB(nil,22,12,12,3,"Activate",0xbb1111,0xffffff,true)
- os.sleep(0.2)
+ sleep(0.2)
  buttons[2] = graph.TB(deactivate,22,12,12,3,"Deactivate",0xbb1111,0xffffff)
  r.activate()
 end
@@ -131,42 +133,26 @@ end
 local function deactivate()
  r.deactivate()
  graph.TB(nil,22,12,12,3,"Deactivate",0xbb1111,0xffffff,true)
- os.sleep(0.2)
+ sleep(0.2)
  buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
 end
 
-local function autoButtonHolder () os.sleep(0.25) end
+local function autoButtonHolder () sleep(0.25) end
 local function autoButton()
  if autoV then
   autoV = false
   graph.TB(nil,7,12,12,3,"Auto",0xbb1111,0xffffff,true)
-  os.sleep(0.2)
+  sleep(0.2)
   graph.TB(nil,7,12,12,3,"Auto",0xbb1111,0xffffff)
   buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
  else
   r.deactivate()
   autoV = true
   graph.TB(nil,7,12,12,3,"Auto",0x11bb11,0xffffff,true)
-  os.sleep(0.2)
+  sleep(0.2)
   graph.TB(nil,7,12,12,3,"Auto",0x11bb11,0xffffff)
   buttons[2] = graph.TB(autoButtonHolder,22,12,12,3,"Disabled",0x999999,0xeeeeee)
  end
-end
-
-local function updateAll()
-
- local functions = {
- updateValues,
- updateM,
- updateMain,
- updateFuels,
- buttonsDraw,
- updateGraph }
- 
- for i,f in ipairs(functions) do
-  f() os.sleep(0.1)
- end
- 
 end
 
 local function buttonsDrawHolder() workV = false end
@@ -175,6 +161,19 @@ local function buttonsDraw()
  buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
  buttons[3] = graph.TB(updateAll,22,16,12,3,"Update",0xbb1111,0xffffff)
  buttons[4] = graph.TB(buttonsDrawHolder,7,16,12,3,"Exit",0x999999,0xeeeeee)
+end
+local functions = {
+ updateValues,
+ updateM,
+ updateMain,
+ updateFuels,
+ buttonsDraw,
+ updateGraph --6
+}
+local function updateAll()
+ for i = 1,6 do
+  functions[i]() sleep(0.1)
+ end
 end
 
 reinitialize()
