@@ -17,7 +17,7 @@ if gpu.maxResolution() > 40
 end
 
 local heat,workV,autoV = false,true,false
-function reinitialize()
+local function reinitialize()
  
  r.deactivate()
  r.forceUpdate()
@@ -47,7 +47,7 @@ function reinitialize()
 
 end
 
-function summonHeat()
+local function summonHeat()
 
  if r.getReactorProcessHeat() > 0 then
   graph.DC(36,2,3,18,{0xffffff,0x777777,0xffcc00,0x555555}," ")
@@ -56,7 +56,7 @@ function summonHeat()
 
 end
 
-function updateFuels()
+local function updateFuels()
 
  gpu.setForeground(0xeeaa00)
  gpu.setBackground(0x777777)
@@ -67,7 +67,7 @@ end
 
 
 
-function updateValues()
+local function updateValues()
 
  mr, mh = r.getMaxEnergyStored(), r.getMaxHeatLevel()
  rf, ah = r.getEnergyStored(), r.getHeatLevel()
@@ -75,7 +75,7 @@ function updateValues()
 end
 
 local hfl, hhl, rfl, rhl = 0, 0, 0, 0
-function updateGraph()
+local function updateGraph()
 
  rhl, rfl  = graph.DGLV(rf,mr,3 ,3,1,16,rhl,rfl,0xee0000,0x555555)
 
@@ -85,7 +85,7 @@ function updateGraph()
  
 end
 
-function updateM()
+local function updateM()
 
  local E = math.floor(r.getEfficiency() * 10) / 10
  local H = math.floor(r.getHeatMultiplier() * 10) / 10
@@ -101,7 +101,7 @@ function updateM()
  
 end
 
-function updateMain()
+local function updateMain()
 
  local H,HM   = graph.EVC(ah)
  local MH,MHM = graph.EVC(mh)
@@ -121,21 +121,21 @@ end
 
 local buttons = {}
 
-function activate()
+local function activate()
  graph.TB(nil,22,12,12,3,"Activate",0xbb1111,0xffffff,true)
  os.sleep(0.2)
  buttons[2] = graph.TB(deactivate,22,12,12,3,"Deactivate",0xbb1111,0xffffff)
  r.activate()
 end
 
-function deactivate()
+local function deactivate()
  r.deactivate()
  graph.TB(nil,22,12,12,3,"Deactivate",0xbb1111,0xffffff,true)
  os.sleep(0.2)
  buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
 end
 
-function autoButton()
+local function autoButton()
  if autoV then
   autoV = false
   graph.TB(nil,7,12,12,3,"Auto",0xbb1111,0xffffff,true)
@@ -148,11 +148,11 @@ function autoButton()
   graph.TB(nil,7,12,12,3,"Auto",0x11bb11,0xffffff,true)
   os.sleep(0.2)
   graph.TB(nil,7,12,12,3,"Auto",0x11bb11,0xffffff)
-  buttons[2] = graph.TB((function() os.sleep(0.25) end),22,12,12,3,"Disabled",0x999999,0xeeeeee)
+  buttons[2] = graph.TB((local function() os.sleep(0.25) end),22,12,12,3,"Disabled",0x999999,0xeeeeee)
  end
 end
 
-function updateAll()
+local function updateAll()
 
  local functions = {
  updateValues,
@@ -162,17 +162,17 @@ function updateAll()
  buttonsDraw,
  updateGraph }
  
- for i,f in ipairs(functions)
-  do f() os.sleep(0.1)
+ for i,f in ipairs(functions) do
+  f() os.sleep(0.1)
  end
  
 end
 
-function buttonsDraw()
+local function buttonsDraw()
  buttons[1] = graph.TB(autoButton,7,12,12,3,"Auto",0xbb1111,0xffffff)
  buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
  buttons[3] = graph.TB(updateAll,22,16,12,3,"Update",0xbb1111,0xffffff)
- buttons[4] = graph.TB((function() workV = false end),7,16,12,3,"Exit",0x999999,0xeeeeee)
+ buttons[4] = graph.TB((local function() workV = false end),7,16,12,3,"Exit",0x999999,0xeeeeee)
 end
 
 reinitialize()
@@ -214,10 +214,4 @@ gpu.setBackground(0)
 gpu.setForeground(0xffffff)
 os.execute("clear")
 print("Exiting")
-
-
-
-
-
-
 
