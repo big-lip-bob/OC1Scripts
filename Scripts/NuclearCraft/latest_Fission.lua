@@ -13,7 +13,7 @@ local mr, mh
 local gpu = component.gpu
 if gpu.maxResolution() > 40
  then gpu.setResolution(40,20)
- else os.exit() print("You need a Tier 2 Screen Minimum")
+ else print("You need a Tier 2 Screen Minimum") return
 end
 
 local heat,workV,autoV = false,true,false
@@ -148,7 +148,7 @@ local function autoButton()
   graph.TB(nil,7,12,12,3,"Auto",0x11bb11,0xffffff,true)
   os.sleep(0.2)
   graph.TB(nil,7,12,12,3,"Auto",0x11bb11,0xffffff)
-  buttons[2] = graph.TB((local function() os.sleep(0.25) end),22,12,12,3,"Disabled",0x999999,0xeeeeee)
+  buttons[2] = graph.TB((function() os.sleep(0.25) end),22,12,12,3,"Disabled",0x999999,0xeeeeee)
  end
 end
 
@@ -172,7 +172,7 @@ local function buttonsDraw()
  buttons[1] = graph.TB(autoButton,7,12,12,3,"Auto",0xbb1111,0xffffff)
  buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
  buttons[3] = graph.TB(updateAll,22,16,12,3,"Update",0xbb1111,0xffffff)
- buttons[4] = graph.TB((local function() workV = false end),7,16,12,3,"Exit",0x999999,0xeeeeee)
+ buttons[4] = graph.TB((function() workV = false end),7,16,12,3,"Exit",0x999999,0xeeeeee)
 end
 
 reinitialize()
