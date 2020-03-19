@@ -99,7 +99,7 @@ local function updateM()
  graph.round(HG,1,1) .. " " .. M .. "H/t"
  }
 
- --graph.text(M)
+ graph.text(19,5,M,0xeeaa00)
  
 end
 
