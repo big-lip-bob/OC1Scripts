@@ -96,7 +96,7 @@ local function updateM()
  local M = {
  E .. "%",
  H .. "%",
- HG .. " " .. M .. "H/t"
+ graph.round(HG,1,1) .. " " .. M .. "H/t"
  }
 
  --graph.text(M)
