@@ -137,7 +137,7 @@ function bobs.makeButton(func,x,y,w,h,txt,clr,txtclr,anti,flat) -- self explanat
 	
 	gsetBackground(clr)
 	gsetForeground(txtclr)
-	gset(floor(x+w/2-string.len(txt)/2+0.5	),floor(y+h/2+0.5),txt) 
+	gset(floor(x+w/2-#txt/2+0.5	),floor(y+h/2+0.5),txt) 
 	
 	return {x,y,x+w,y+h,func}
 	
