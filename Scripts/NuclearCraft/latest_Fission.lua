@@ -186,7 +186,7 @@ while workV do
  updateMain()
  updateGraph()
 
- ev,ad,x,y = event.pull(1.5)
+ local ev,ad,x,y = event.pull(1.5)
  
  if ev == "touch" then
   for i,t in ipairs(buttons)
