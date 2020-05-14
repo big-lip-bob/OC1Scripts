@@ -14,7 +14,7 @@ if not g._PMMaster or g._PMMaster.version and g._PMMaster.version < current_ver 
 	local modem = require("component").modem
 
 	g._PMMaster = {
-		version = 0
+		version = 0,
 		config = {port = 6969},
 		trusted_sources = {},
 		allowed_passwords = {},
