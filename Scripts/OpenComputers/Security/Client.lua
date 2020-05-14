@@ -10,32 +10,39 @@ local port = args[1] or 6969
 local e_p = event.pull
 -- syncer, be sure to have started the listener
 modem.open(port)
-print("press enter to sync, be sure the server is listening (start_listen)");io.read()
-modem.broadcast(port,"Im looking for ya")
-local _,_,master = e_p(5,"modem_message")
-if not master then print("failed syncing properly : timed out") return end
+local master
+io.write("Sync Automatically (requires the server to be in pairing mode [y/n] : ")
+if io.read():sub(1,1):lower() == "y" then
+	modem.broadcast(port,"Im looking for ya")
+	local _,_,_master = e_p(5,"modem_message")
+	if not _master then print("failed syncing properly : timed out | Returning") return end
+	master = _master
+	print("Pairing succes")
+else
+	print("Enter Master Server Address (fully)")
+	master = io.read()
+end
+os.sleep(1)
 
-print("Pairing succes")
-os.sleep(3)
+local wa,ha = component.proxy(component.gpu.getScreen()).getAspectRatio()
+component.gpu.setResolution(20*wa,10*ha)
 local clear = require("term").clear
-local succes_handler = loadfile("succ.lua")
+local succes_handler = loadfile("succ.lua") or (function() print("Succes Handler failed loading") return function() print("No loaded handler") end end)()
+
+local function vararg_capture(event_name,receiver,sender,port,distance,...)
+	if not (...) then return print("Timed out") else
+		if result then
+			print("Success")
+			return succes_handler(...) -- yes a damn fucntion just for varargs even if i don't use really idk
+		else
+			print("Wrong password, retry")
+		end
+	end
+end
 while true do
 	clear()
 	print("Enter the password")
 	local password = io.read()
-	if password ~= "" then
-		modem.send(master,port,password)
-		local _,_,_,_,_,result = e_p(5,"modem_message")
-		if not _ then print("Time outd") else
-			if result then
-				print("Success")
-				succes_handler()
-			else
-				print("Wrong password, retry")
-			end
-		end
-	else
-		print("nice try with that empty password")
-	end
-	os.sleep(3)
+	modem.send(master,port,password)
+	vararg_capture(e_p(5,"modem_message"))
 end
