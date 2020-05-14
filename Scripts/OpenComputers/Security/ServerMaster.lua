@@ -9,6 +9,9 @@ if not g._PMMaster or g._PMMaster.version and g._PMMaster.version < current_ver 
 
 	if require("computer").getArchitecture():find("J") then print("This program is meant for persistent architectures") end
 	local event = require("event")
+	
+	if not component.isAvailable("modem") then return print("This program requires networking capabilities") end
+	local modem = require("component").modem
 
 	g._PMMaster = {
 		version = 0
@@ -33,8 +36,6 @@ if not g._PMMaster or g._PMMaster.version and g._PMMaster.version < current_ver 
 			open_port = function(manager,args)
 				local old_port = manager.config.port
 				manager.config.port = args[2] or manager.config.port
-				if not component.isAvailable("modem") then return print("This program requires networking capabilities") end
-				local modem = require("component").modem
 				modem.close(old_port)
 				modem.open(manager.config.port)
 			end,
