@@ -11,7 +11,7 @@ if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver
 	local modem = component.modem
 
 	g._PMMaster = {
-		version = 0,
+		version = current_ver,
 		config = {port = 6969},
 		trusted_sources = {},
 		allowed_passwords = {},
@@ -56,15 +56,20 @@ if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver
 				end
 			end,
 			passwords = function(manager,args,opts)
-				local default = otps.v
+				local default = opts.v or true
 				if #args > 1 then
 					for i = 2,#args do
 						local key,value = args[i]:match("([^=]*)=?(.*)")
-						manager.allowed_passwords[key or args[i]] = value or default or true
+						manager.allowed_passwords[key or args[i]] = value or default
 					end
 				else
 					manager.default_output:write("Registered passwords : \n")
-					for k,v in pairs(manager.allowed_passwords) do manager.default_output:write(k," ") if v ~= true then manager.default_output:write(" = ",v," ") end end
+					for k,v in pairs(manager.allowed_passwords) do
+						manager.default_output:write(k," ")
+						if v ~= true then
+							manager.default_output:write(" = ",v," ")
+						end
+					end
 					manager.default_output:write("\n")
 				end
 			end,
@@ -89,15 +94,17 @@ if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver
 			end,
 			pair = function(manager,args)
 				local was_on = manager.commands.stop(manager)
-				
-				for _ = 1, tonumber(args[2]) or 1 do
+				manager.default_output:write("Press CRTL ALT C to interrupt \n")
+				local max = tonumber(args[2]) or 1
+				for i = 1, max do
+					manager.default_output:write("Pairing...",i,"/",max,"\n")
 					local event_name,receiver,sender,port,distance,data1 = event.pull("modem_message") -- event subscription
+					modem.send(sender,port,true,"Received well")
 					if manager.trusted_sources[sender] then
 						manager.default_output:write(sender:sub(1,8).." already registered \n")
 					else
 						if not data1=="Im looking for ya" then return end
 						manager.trusted_sources[sender] = true
-						modem.send(sender,port,true,"Received well")
 						manager.default_output:write("Added "..sender:sub(1,8).." : "..distance.." away \n")
 					end
 				end
@@ -105,15 +112,18 @@ if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver
 				if was_on then manager.commands.start(manager) end
 			end,
 			stop = function(manager) if manager.thread_id then event.cancel(manager.thread_id) return ture end end,
-			help = function(master) print("Available commands") for k in pairs(master.commands) do io.write(k," : ",manager.docs[k],"\n") end end
+			help = function(manager)
+				manager.default_output:write("Available commands \n")
+				for k in pairs(manager.commands) do
+					io.write(k," : ",manager.docs[k],"\n")
+				end
+			end
 		}
 	}
-	g._PMMaster.commands.open_port(g._PMMaster,{})
+	modem.open(g._PMMaster.config.port)
 end
 
+local manager = g._PMMaster
 local args,opts = require("shell").parse(...)
-
-
-local master = g._PMMaster --or error("fatal error")
-(master.commands[args[1]:lower()] or master.commands["help"])(master,args,opts)
+(manager.commands[args[1]] or manager.commands.help)(manager,args,opts)
 
