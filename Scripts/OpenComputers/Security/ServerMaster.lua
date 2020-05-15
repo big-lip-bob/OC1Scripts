@@ -1,17 +1,14 @@
-local args,opts = require("shell").parse(...)
-
-
-
 local g = _G
+local current_ver = 1.1		
 
-local current_ver = 0
-if not g._PMMaster or g._PMMaster.version and g._PMMaster.version < current_ver then
+if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver) then
 
 	if require("computer").getArchitecture():find("J") then print("This program is meant for persistent architectures") end
 	local event = require("event")
 	
+	local component = require("component")
 	if not component.isAvailable("modem") then return print("This program requires networking capabilities") end
-	local modem = require("component").modem
+	local modem = component.modem
 
 	g._PMMaster = {
 		version = 0,
@@ -29,7 +26,7 @@ if not g._PMMaster or g._PMMaster.version and g._PMMaster.version < current_ver 
 			stop = "Disables the listener",
 			open_port = "Changes and opens the port",
 			reset = "Wipes the Manager from memory (No saves yet, using the fact that OC is persistent)",
-			help = "Displays this ?",
+			help = "Displays this ?"
 			
 		},
 		commands = {
@@ -111,9 +108,12 @@ if not g._PMMaster or g._PMMaster.version and g._PMMaster.version < current_ver 
 			help = function(master) print("Available commands") for k in pairs(master.commands) do io.write(k," : ",manager.docs[k],"\n") end end
 		}
 	}
-	g._PMMaster.commands.open_port(g._PMMaster)
+	g._PMMaster.commands.open_port(g._PMMaster,{})
 end
 
-local master = g._PMMaster
+local args,opts = require("shell").parse(...)
+
+
+local master = g._PMMaster --or error("fatal error")
 (master.commands[args[1]:lower()] or master.commands["help"])(master,args,opts)
 
