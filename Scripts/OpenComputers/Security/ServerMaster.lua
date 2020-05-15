@@ -111,7 +111,7 @@ if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver
 				
 				if was_on then manager.commands.start(manager) end
 			end,
-			stop = function(manager) if manager.thread_id then event.cancel(manager.thread_id) return ture end end,
+			stop = function(manager) if manager.thread_id then return event.cancel(manager.thread_id) end end,
 			help = function(manager)
 				manager.default_output:write("Available commands \n")
 				for k in pairs(manager.commands) do
@@ -124,6 +124,6 @@ if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver
 end
 
 local manager = g._PMMaster
-local args,opts = require("shell").parse(...)
+local args,opts = require("shell").parse(...); -- damn fuck you semi-colon
 (manager.commands[args[1]] or manager.commands.help)(manager,args,opts)
 
