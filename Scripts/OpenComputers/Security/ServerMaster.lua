@@ -18,7 +18,7 @@ if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver
 		default_output = io.stdout,
 		docs = {
 			start = "Enables the listener",
-			passwords = "Displays passwords, or adds them if arguments are provided, the -v option provides the default value the = less passwords take",
+			passwords = "Displays passwords, or adds them if arguments are provided, the -v option provides the default value",
 			sources = "Displays sources, or adds them if arguments are provided, to automatically pair, see pair",
 			pair = "Starts pairing with a client",
 			remove_passwords = "Removes passwords specified as arguments",
@@ -60,14 +60,14 @@ if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver
 				if #args > 1 then
 					for i = 2,#args do
 						local key,value = args[i]:match("([^=]*)=?(.*)")
-						manager.allowed_passwords[key or args[i]] = value or default
+						manager.allowed_passwords[key or args[i]] = (value == "" and default or value)
 					end
 				else
 					manager.default_output:write("Registered passwords : \n")
 					for k,v in pairs(manager.allowed_passwords) do
 						manager.default_output:write(k," ")
 						if v ~= true then
-							manager.default_output:write(" = ",v," ")
+							manager.default_output:write(" = ",v,"; ")
 						end
 					end
 					manager.default_output:write("\n")
@@ -111,7 +111,7 @@ if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver
 				
 				if was_on then manager.commands.start(manager) end
 			end,
-			stop = function(manager) if manager.thread_id then return event.cancel(manager.thread_id) end end,
+			stop = function(manager) if manager.thread_id then manager.thread_id = not event.cancel(manager.thread_id) end return manager.thread_id end,
 			help = function(manager)
 				manager.default_output:write("Available commands \n")
 				for k in pairs(manager.commands) do
