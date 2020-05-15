@@ -115,7 +115,7 @@ if not g._PMMaster or (g._PMMaster.version and g._PMMaster.version < current_ver
 			help = function(manager)
 				manager.default_output:write("Available commands \n")
 				for k in pairs(manager.commands) do
-					io.write(k," : ",manager.docs[k],"\n")
+					manager.default_output:write(k," : ",manager.docs[k],"\n")
 				end
 			end
 		}
