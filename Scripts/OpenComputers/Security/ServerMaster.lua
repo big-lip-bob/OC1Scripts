@@ -94,11 +94,11 @@ if not g._PMMaster or g._PMMaster.version and g._PMMaster.version < current_ver 
 				local was_on = manager.commands.stop(manager)
 				
 				for _ = 1, tonumber(args[2]) or 1 do
-					local event_name,receiver,sender,port,distance,... = event.pull("modem_message") -- event subscription
+					local event_name,receiver,sender,port,distance,data1 = event.pull("modem_message") -- event subscription
 					if manager.trusted_sources[sender] then
 						manager.default_output:write(sender:sub(1,8).." already registered \n")
 					else
-						if not (...)=="Im looking for ya" then return end
+						if not data1=="Im looking for ya" then return end
 						manager.trusted_sources[sender] = true
 						modem.send(sender,port,true,"Received well")
 						manager.default_output:write("Added "..sender:sub(1,8).." : "..distance.." away \n")
