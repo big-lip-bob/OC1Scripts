@@ -123,6 +123,8 @@ end
 
 local buttons = {}
 
+local deactivate
+
 local function activate()
  graph.TB(nil,22,12,12,3,"Activate",0xbb1111,0xffffff,true)
  sleep(0.2)
@@ -130,7 +132,7 @@ local function activate()
  r.activate()
 end
 
-local function deactivate()
+deactivate = function() -- upvalue to not lose reference
  r.deactivate()
  graph.TB(nil,22,12,12,3,"Deactivate",0xbb1111,0xffffff,true)
  sleep(0.2)
@@ -155,14 +157,23 @@ local function autoButton()
  end
 end
 
-local function buttonsDrawHolder() workV = false end
+local functions
+
+local function updateAll()
+ for i = 1,6 do
+  functions[i]() sleep(0.1)
+ end
+end
+
 local function buttonsDraw()
+
  buttons[1] = graph.TB(autoButton,7,12,12,3,"Auto",0xbb1111,0xffffff)
  buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
  buttons[3] = graph.TB(updateAll,22,16,12,3,"Update",0xbb1111,0xffffff)
- buttons[4] = graph.TB(buttonsDrawHolder,7,16,12,3,"Exit",0x999999,0xeeeeee)
+ buttons[4] = graph.TB(function() workV = false end,7,16,12,3,"Exit",0x999999,0xeeeeee)
 end
-local functions = {
+
+functions = { -- local upvalue here
  updateValues,
  updateM,
  updateMain,
@@ -170,11 +181,10 @@ local functions = {
  buttonsDraw,
  updateGraph --6
 }
-local function updateAll()
- for i = 1,6 do
-  functions[i]() sleep(0.1)
- end
-end
+
+
+
+
 
 reinitialize()
 updateAll()
