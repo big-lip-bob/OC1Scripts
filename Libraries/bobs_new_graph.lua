@@ -55,7 +55,7 @@ function bobs.drawBox(x,y,w,h,ct,filler,t) -- self explanatory, to contain graph
 
 	w,h = w-1,h-1
 	
-	t = bc or t -- user provided boundary characters cause why not 
+	t = t or bc -- user provided boundary characters cause why not 
 
 	if ct then -- color table
 		if ct[3] and ct[4] then
