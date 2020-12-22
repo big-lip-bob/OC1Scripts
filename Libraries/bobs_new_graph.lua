@@ -1,9 +1,5 @@
-
 -- Bob's Secret stuff 打打打打打打打打打打
-
-local component = require("component")
 local unicode = require("unicode")
-local gpu = component.gpu
 local gcls = {"▁","▂","▃","▄","▅","▆","▇","█",[0] = ""} -- Vertical bars for more controll
 
 -- over complicated vertical line graph bar display 
@@ -12,11 +8,12 @@ local floor = math.floor
 
 local bobs = {}
 
-local gfill,gset = gpu.fill,gpu.set
+local gfill,gset,gsetBackground,gsetForeground = gpu.fill,gpu.set,gpu.setBackground,gpu.setForeground
 function bobs.changeGPU(component)
 	gpu = component
-	gfill,gset = gpu.fill,gpu.set
+	gfill,gset,gsetBackground,gsetForeground = gpu.fill,gpu.set,gpu.setBackground,gpu.setForeground
 end
+bobs.changeGPU(require("component").gpu)
 
 function bobs.drawVerticalGraph(input,maxx,x,y,w,h,pghl,pgfl,fore,back)
 
