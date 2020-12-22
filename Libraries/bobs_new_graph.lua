@@ -18,7 +18,7 @@ function bobs.changeGPU(component)
 	gfill,gset = gpu.fill,gpu.set
 end
 
-function bobs.drawVerticalGraph(input,maxx,x,y,w,h,pghl,pgfl,fore,back)
+function bobs.	(input,maxx,x,y,w,h,pghl,pgfl,fore,back)
 
 	if fore and back then
 		gsetBackground(back)
