@@ -22,7 +22,7 @@ local heat,workV,autoV = false,true,false
 local function summonHeat()
 
  if r.getReactorProcessHeat() > 0 then
-  graph.DC(36,2,3,18,{0xffffff,0x777777,0xffcc00,0x555555}," ")
+  graph.drawBox(36,2,3,18,{0xffffff,0x777777,0xffcc00,0x555555}," ")
   heat = true
  end
 
@@ -39,7 +39,7 @@ local function reinitialize()
  gpu.setBackground(0x777777)
  gpu.fill(1,1,40,20," ")
 
- graph.DC(2,2,3,18,{0xffffff,0x777777,0xff0000,0x555555}," ")
+ graph.drawBox(2,2,3,18,{0xffffff,0x777777,0xff0000,0x555555}," ")
  
  summonHeat()
 
@@ -78,46 +78,35 @@ end
 
 local hfl, hhl, rfl, rhl = 0, 0, 0, 0
 local function updateGraph()
-
- rhl, rfl  = graph.DGLV(rf,mr,3 ,3,1,16,rhl,rfl,0xee0000,0x555555)
-
+ rhl, rfl  = graph.drawVerticalGraph(rf,mr,3 ,3,1,16,rhl,rfl,0xee0000,0x555555)
  if heat then
-  hhl, hfl = graph.DGLV(ah,mh,37,3,1,16,hhl,hfl,0xeecc00,0x555555)
+  hhl, hfl = graph.drawVerticalGraph(ah,mh,37,3,1,16,hhl,hfl,0xeecc00,0x555555)
  end
- 
 end
 
 local function updateM()
 
  local E = floor(r.getEfficiency() * 10) / 10
  local H = floor(r.getHeatMultiplier() * 10) / 10
- local HG,M = graph.EVC(r.getReactorProcessHeat())
+ local HG,M = graph.addExponent(r.getReactorProcessHeat())
 
- local M = {
- E .. "%",
- H .. "%",
- graph.round(HG,1,1) .. " " .. M .. "H/t"
- }
-
- graph.text(19,5,M,0xeeaa00)
+ gpu.setForeground(0xeeaa00)
+ gpu.set(19,5,("%d%%\n%d%%\n%d %d H/t"):format(E,H,graph.round(HG,1,1),M),0xeeaa00)
  
 end
 
+local abs = math.abs
 local function updateMain()
 
- local H,HM   = graph.EVC(ah)
- local MH,MHM = graph.EVC(mh)
- local E,EM   = graph.EVC(rf)
- local ME,MEH = graph.EVC(mr)
-
- local F = {
- graph.RSATC(H) .. " " .. HM .. "H / "  .. graph.RSATC(MH) .. " " .. MHM .. "H",
- graph.RSATC(E) .. " " .. EM .. "RF / " .. graph.RSATC(ME)  .. " " .. MEH .. "RF"
- }
-
+ local H,HM   = graph.addExponent(ah)
+ local MH,MHM = graph.addExponent(mh)
+ local E,EM   = graph.addExponent(rf)
+ local ME,MEH = graph.addExponent(mr)
+  
  gpu.setBackground(0x777777)
- gpu.set(20,10,tostring(floor(math.abs(r.getEnergyChange()))))
- graph.text(15,8,F,0xeeaa00)
+ gpu.set(20,10,tostring(floor(abs(r.getEnergyChange()))))
+ gpu.setForeground(0xeeaa00)
+ gpu.set(15,8,("%d%s H / %d%s H\n%d%s RF / %d%s RF"):format(H,HM,M,MHM,E,EM,M,MEH))
 
 end
 
@@ -126,34 +115,34 @@ local buttons = {}
 local deactivate
 
 local function activate()
- graph.TB(nil,22,12,12,3,"Activate",0xbb1111,0xffffff,true)
+ graph.makeButton(nil,22,12,12,3,"Activate",0xbb1111,0xffffff,true)
  sleep(0.2)
- buttons[2] = graph.TB(deactivate,22,12,12,3,"Deactivate",0xbb1111,0xffffff)
+ buttons[2] = graph.makeButton(deactivate,22,12,12,3,"Deactivate",0xbb1111,0xffffff)
  r.activate()
 end
 
 deactivate = function() -- upvalue to not lose reference
  r.deactivate()
- graph.TB(nil,22,12,12,3,"Deactivate",0xbb1111,0xffffff,true)
+ graph.makeButton(nil,22,12,12,3,"Deactivate",0xbb1111,0xffffff,true)
  sleep(0.2)
- buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
+ buttons[2] = graph.makeButton(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
 end
 
 local function autoButtonHolder () sleep(0.25) end
 local function autoButton()
  if autoV then
   autoV = false
-  graph.TB(nil,7,12,12,3,"Auto",0xbb1111,0xffffff,true)
+  graph.makeButton(nil,7,12,12,3,"Auto",0xbb1111,0xffffff,true)
   sleep(0.2)
-  graph.TB(nil,7,12,12,3,"Auto",0xbb1111,0xffffff)
-  buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
+  graph.makeButton(nil,7,12,12,3,"Auto",0xbb1111,0xffffff)
+  buttons[2] = graph.makeButton(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
  else
   r.deactivate()
   autoV = true
-  graph.TB(nil,7,12,12,3,"Auto",0x11bb11,0xffffff,true)
+  graph.makeButton(nil,7,12,12,3,"Auto",0x11bb11,0xffffff,true)
   sleep(0.2)
-  graph.TB(nil,7,12,12,3,"Auto",0x11bb11,0xffffff)
-  buttons[2] = graph.TB(autoButtonHolder,22,12,12,3,"Disabled",0x999999,0xeeeeee)
+  graph.makeButton(nil,7,12,12,3,"Auto",0x11bb11,0xffffff)
+  buttons[2] = graph.makeButton(autoButtonHolder,22,12,12,3,"Disabled",0x999999,0xeeeeee)
  end
 end
 
@@ -167,13 +156,13 @@ end
 
 local function buttonsDraw()
 
- buttons[1] = graph.TB(autoButton,7,12,12,3,"Auto",0xbb1111,0xffffff)
- buttons[2] = graph.TB(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
- buttons[3] = graph.TB(updateAll,22,16,12,3,"Update",0xbb1111,0xffffff)
- buttons[4] = graph.TB(function() workV = false end,7,16,12,3,"Exit",0x999999,0xeeeeee)
+ buttons[1] = graph.makeButton(autoButton,7,12,12,3,"Auto",0xbb1111,0xffffff)
+ buttons[2] = graph.makeButton(activate,22,12,12,3,"Activate",0xbb1111,0xffffff)
+ buttons[3] = graph.makeButton(updateAll,22,16,12,3,"Update",0xbb1111,0xffffff)
+ buttons[4] = graph.makeButton(function() workV = false end,7,16,12,3,"Exit",0x999999,0xeeeeee)
 end
 
-functions = { -- local upvalue here
+functions = { -- local upvalue
  updateValues,
  updateM,
  updateMain,
@@ -181,9 +170,6 @@ functions = { -- local upvalue here
  buttonsDraw,
  updateGraph --6
 }
-
-
-
 
 
 reinitialize()
