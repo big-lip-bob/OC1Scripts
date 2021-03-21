@@ -8,7 +8,7 @@ local floor = math.floor
 
 local bobs = {}
 
-local gfill,gset,gsetBackground,gsetForeground = gpu.fill,gpu.set,gpu.setBackground,gpu.setForeground
+local gfill,gset,gsetBackground,gsetForeground
 function bobs.changeGPU(gpu)
 	gfill,gset,gsetBackground,gsetForeground = gpu.fill,gpu.set,gpu.setBackground,gpu.setForeground
 end
