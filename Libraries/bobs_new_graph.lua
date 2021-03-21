@@ -107,7 +107,8 @@ end
 
 function bobs.makeButton(func,x,y,w,h,txt,clr,txtclr,anti,flat) -- self explanatory, makes a button and returns the new button data --can be combined with OOP
 
-	local w,h = w-1,h-1 
+	local w,h = w-1,h-1
+	local mclr,pclr
 	if anti then
 		mclr,pclr=clr+0x111111,clr-0x111111 else
 		mclr,pclr=clr-0x111111,clr+0x111111
