@@ -1,6 +1,6 @@
 -- Bob's Secret stuff 打打打打打打打打打打
 local unicode = require("unicode")
-local gcls = {"▁","▂","▃","▄","▅","▆","▇","█",[0] = ""} -- Vertical bars for more controll
+local gcls = {"▁","▂","▃","▄","▅","▆","▇","█",[0] = " "} -- Vertical bars for more controll
 
 -- over complicated vertical line graph bar display 
 
