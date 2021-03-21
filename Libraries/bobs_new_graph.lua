@@ -9,8 +9,7 @@ local floor = math.floor
 local bobs = {}
 
 local gfill,gset,gsetBackground,gsetForeground = gpu.fill,gpu.set,gpu.setBackground,gpu.setForeground
-function bobs.changeGPU(component)
-	gpu = component
+function bobs.changeGPU(gpu)
 	gfill,gset,gsetBackground,gsetForeground = gpu.fill,gpu.set,gpu.setBackground,gpu.setForeground
 end
 bobs.changeGPU(require("component").gpu)
