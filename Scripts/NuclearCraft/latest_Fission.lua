@@ -106,7 +106,7 @@ local function updateMain()
  gpu.setBackground(0x777777)
  gpu.set(20,10,tostring(floor(abs(r.getEnergyChange()))))
  gpu.setForeground(0xeeaa00)
- gpu.set(15,8,("%d%s H / %d%s H\n%d%s RF / %d%s RF"):format(H,HM,M,MHM,E,EM,M,MEH))
+ gpu.set(15,8,("%.1f%s H / %.1f%s H\n%.1f%s RF / %.1f%s RF"):format(H,HM,M,MHM,E,EM,M,MEH))
 
 end
 
