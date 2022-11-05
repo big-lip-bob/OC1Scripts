@@ -91,7 +91,7 @@ local function updateM()
  local HG,M = graph.addExponent(r.getReactorProcessHeat())
 
  gpu.setForeground(0xeeaa00)
- gpu.set(19,5,("%d%%\n%d%%\n%d %s H/t"):format(E,H,graph.round(HG,1,1),M),0xeeaa00)
+ gpu.set(19,5,("%d%%\n%d%%\n%.1f %s H/t"):format(E, H, HG, M),0xeeaa00)
  
 end
 
